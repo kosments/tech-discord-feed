@@ -31,11 +31,3 @@ jobs:
           DISCORD_WEBHOOK_URL_ENGINEERING: ${{ secrets.DISCORD_WEBHOOK_URL_ENGINEERING }}
           DISCORD_WEBHOOK_URL_OSS: ${{ secrets.DISCORD_WEBHOOK_URL_OSS }}
         run: deno run --allow-net --allow-env --allow-read --allow-write src/bot.ts
-
-      - name: Commit state changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "RSS Bot"
-          git add .feed_state.json
-          git commit -m "chore: update feed state" || true
-          git push
