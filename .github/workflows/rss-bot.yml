@@ -1,0 +1,41 @@
+name: Tech RSS Bot
+
+on:
+  schedule:
+    # Every 15 minutes
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rss-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
+
+      - name: Run RSS Bot
+        env:
+          DISCORD_WEBHOOK_URL_AI: ${{ secrets.DISCORD_WEBHOOK_URL_AI }}
+          DISCORD_WEBHOOK_URL_CLOUD: ${{ secrets.DISCORD_WEBHOOK_URL_CLOUD }}
+          DISCORD_WEBHOOK_URL_K8S: ${{ secrets.DISCORD_WEBHOOK_URL_K8S }}
+          DISCORD_WEBHOOK_URL_CNCF: ${{ secrets.DISCORD_WEBHOOK_URL_CNCF }}
+          DISCORD_WEBHOOK_URL_OBS: ${{ secrets.DISCORD_WEBHOOK_URL_OBS }}
+          DISCORD_WEBHOOK_URL_SEC: ${{ secrets.DISCORD_WEBHOOK_URL_SEC }}
+          DISCORD_WEBHOOK_URL_ENG: ${{ secrets.DISCORD_WEBHOOK_URL_ENG }}
+          DISCORD_WEBHOOK_URL_OSS: ${{ secrets.DISCORD_WEBHOOK_URL_OSS }}
+        run: deno run --allow-net --allow-env --allow-read --allow-write src/bot.ts
+
+      - name: Commit state changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "RSS Bot"
+          git add .feed_state.json
+          git commit -m "chore: update feed state" || true
+          git push

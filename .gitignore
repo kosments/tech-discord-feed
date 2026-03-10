@@ -1,0 +1,25 @@
+# State files
+.feed_state.json
+
+# Secrets and tokens
+discord-secrets.json
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+.deno/
+deno.lock
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store

@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "bot": "deno run --allow-net --allow-env src/bot.ts",
+    "test": "deno test --allow-net --allow-env"
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.208.0/",
+    "yaml": "https://deno.land/std@0.208.0/yaml/mod.ts"
+  }
+}

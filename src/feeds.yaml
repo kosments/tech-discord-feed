@@ -1,0 +1,118 @@
+feeds:
+  ai:
+    webhook_env: DISCORD_WEBHOOK_URL_AI
+    sources:
+      - url: https://www.anthropic.com/news/rss.xml
+        name: Anthropic News
+      - url: https://openai.com/blog/rss.xml
+        name: OpenAI Blog
+      - url: https://blog.google/technology/ai/rss/
+        name: Google AI Blog
+      - url: https://cursor.sh/changelog/rss.xml
+        name: Cursor Changelog
+      - url: https://github.blog/tag/copilot/feed/
+        name: GitHub Copilot
+      - url: https://developers.googleblog.com/en/rss/
+        name: Google Developers Blog
+
+  cloud:
+    webhook_env: DISCORD_WEBHOOK_URL_CLOUD
+    sources:
+      - url: https://cloud.google.com/feeds/gcp-release-notes.xml
+        name: GCP Release Notes
+      - url: https://cloud.google.com/blog/rss/
+        name: GCP Blog
+      - url: https://aws.amazon.com/new/feed/
+        name: AWS News
+      - url: https://aws.amazon.com/blogs/aws/feed/
+        name: AWS Blog
+
+  kubernetes:
+    webhook_env: DISCORD_WEBHOOK_URL_K8S
+    sources:
+      - url: https://github.com/kubernetes/kubernetes/releases.atom
+        name: Kubernetes Releases
+      - url: https://kubernetes.io/feed.xml
+        name: Kubernetes Blog
+      - url: https://github.com/kubernetes/enhancements/releases.atom
+        name: Kubernetes Enhancements
+
+  cncf:
+    webhook_env: DISCORD_WEBHOOK_URL_CNCF
+    sources:
+      - url: https://www.cncf.io/feed/
+        name: CNCF
+      - url: https://istio.io/latest/news/releases/index.xml
+        name: Istio
+      - url: https://github.com/helm/helm/releases.atom
+        name: Helm
+      - url: https://github.com/argoproj/argo-cd/releases.atom
+        name: ArgoCD
+      - url: https://linkerd.io/feed/
+        name: Linkerd
+      - url: https://github.com/envoyproxy/envoy/releases.atom
+        name: Envoy
+
+  observability:
+    webhook_env: DISCORD_WEBHOOK_URL_OBS
+    sources:
+      - url: https://opentelemetry.io/feed.xml
+        name: OpenTelemetry
+      - url: https://github.com/prometheus/prometheus/releases.atom
+        name: Prometheus
+      - url: https://github.com/grafana/grafana/releases.atom
+        name: Grafana
+      - url: https://www.datadoghq.com/blog/rss.xml
+        name: Datadog Blog
+      - url: https://newrelic.com/blog/rss
+        name: New Relic Blog
+
+  security:
+    webhook_env: DISCORD_WEBHOOK_URL_SEC
+    sources:
+      - url: https://github.com/kubernetes/kubernetes/security/advisories.atom
+        name: Kubernetes Security
+      - url: https://tag-security.cncf.io/feed.xml
+        name: CNCF Security
+      - url: https://security.googleblog.com/feeds/posts/default
+        name: Google Security Blog
+      - url: https://aws.amazon.com/blogs/security/feed/
+        name: AWS Security Blog
+
+  engineering:
+    webhook_env: DISCORD_WEBHOOK_URL_ENG
+    sources:
+      - url: https://www.infoq.com/feed/
+        name: InfoQ
+      - url: https://hnrss.org/frontpage
+        name: Hacker News
+      - url: https://sreweekly.com/feed/
+        name: SRE Weekly
+      - url: https://lwkd.info/rss
+        name: Linux Weekly Digest
+
+  oss:
+    webhook_env: DISCORD_WEBHOOK_URL_OSS
+    sources:
+      - url: https://github.com/trending.atom
+        name: GitHub Trending
+      - url: https://github.com/releases.atom
+        name: GitHub Releases
+      - url: https://landscape.cncf.io/feed.xml
+        name: CNCF Landscape
+
+keywords:
+  priority:
+    - "Breaking Change"
+    - "Security"
+    - "CVE"
+    - "Vulnerability"
+    - "Critical"
+    - "v1.0.0"
+
+  include:
+    - "Kubernetes"
+    - "Cloud"
+    - "Release"
+    - "Update"
+    - "New"
