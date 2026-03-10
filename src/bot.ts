@@ -1,5 +1,4 @@
 import { parse } from "https://deno.land/std@0.208.0/yaml/mod.ts";
-import { readTextFile } from "https://deno.land/std@0.208.0/fs/mod.ts";
 
 interface FeedConfig {
   feeds: Record<
@@ -27,7 +26,7 @@ const STATE_FILE = ".feed_state.json";
 
 async function getStateFile(): Promise<Map<string, string>> {
   try {
-    const content = await readTextFile(STATE_FILE);
+    const content = await Deno.readTextFile(STATE_FILE);
     const data = JSON.parse(content);
     return new Map(Object.entries(data));
   } catch {
@@ -159,7 +158,7 @@ async function sendDiscordMessage(webhookUrl: string, message: string): Promise<
 
 async function main() {
   // Load configuration
-  const configYaml = await readTextFile("src/feeds.yaml");
+  const configYaml = await Deno.readTextFile("src/feeds.yaml");
   const config = parse(configYaml) as FeedConfig;
 
   // Load state

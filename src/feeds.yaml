@@ -28,7 +28,7 @@ feeds:
         name: AWS Blog
 
   kubernetes:
-    webhook_env: DISCORD_WEBHOOK_URL_K8S
+    webhook_env: DISCORD_WEBHOOK_URL_KUBERNETES
     sources:
       - url: https://github.com/kubernetes/kubernetes/releases.atom
         name: Kubernetes Releases
@@ -54,7 +54,7 @@ feeds:
         name: Envoy
 
   observability:
-    webhook_env: DISCORD_WEBHOOK_URL_OBS
+    webhook_env: DISCORD_WEBHOOK_URL_OBSERVABILITY
     sources:
       - url: https://opentelemetry.io/feed.xml
         name: OpenTelemetry
@@ -68,7 +68,7 @@ feeds:
         name: New Relic Blog
 
   security:
-    webhook_env: DISCORD_WEBHOOK_URL_SEC
+    webhook_env: DISCORD_WEBHOOK_URL_SECURITY
     sources:
       - url: https://github.com/kubernetes/kubernetes/security/advisories.atom
         name: Kubernetes Security
@@ -80,7 +80,7 @@ feeds:
         name: AWS Security Blog
 
   engineering:
-    webhook_env: DISCORD_WEBHOOK_URL_ENG
+    webhook_env: DISCORD_WEBHOOK_URL_ENGINEERING
     sources:
       - url: https://www.infoq.com/feed/
         name: InfoQ
