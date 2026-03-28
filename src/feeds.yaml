@@ -1,105 +1,23 @@
 feeds:
-  ai:
-    webhook_env: DISCORD_WEBHOOK_URL_AI
+  trends:
+    webhook_env: DISCORD_WEBHOOK_URL_TRENDS
     sources:
-      - url: https://www.anthropic.com/news/rss.xml
-        name: Anthropic News
-      - url: https://openai.com/blog/rss.xml
-        name: OpenAI Blog
-      - url: https://blog.google/technology/ai/rss/
-        name: Google AI Blog
-      - url: https://cursor.sh/changelog/rss.xml
-        name: Cursor Changelog
-      - url: https://github.blog/tag/copilot/feed/
-        name: GitHub Copilot
-      - url: https://developers.googleblog.com/en/rss/
-        name: Google Developers Blog
+      - url: https://qiita.com/trend.atom
+        name: Qiita トレンド
+      - url: https://zenn.dev/feed
+        name: Zenn トレンド
 
-  cloud:
-    webhook_env: DISCORD_WEBHOOK_URL_CLOUD
+  sre:
+    webhook_env: DISCORD_WEBHOOK_URL_SRE
     sources:
-      - url: https://cloud.google.com/feeds/gcp-release-notes.xml
-        name: GCP Release Notes
-      - url: https://gke.io/feed
-        name: GKE Updates
-      - url: https://aws.amazon.com/new/feed/
-        name: AWS News
-      - url: https://aws.amazon.com/blogs/aws/feed/
-        name: AWS Blog
-      - url: https://azure.microsoft.com/en-us/blog/feed/
-        name: Azure Blog
-
-  kubernetes:
-    webhook_env: DISCORD_WEBHOOK_URL_KUBERNETES
-    sources:
-      - url: https://github.com/kubernetes/kubernetes/releases.atom
-        name: Kubernetes Releases
-      - url: https://kubernetes.io/feed.xml
-        name: Kubernetes Blog
-      - url: https://github.com/kubernetes/enhancements/releases.atom
-        name: Kubernetes Enhancements
-
-  cncf:
-    webhook_env: DISCORD_WEBHOOK_URL_CNCF
-    sources:
+      - url: https://www.usenix.org/blog/rss.xml
+        name: USENIX / SREcon
       - url: https://www.cncf.io/feed/
-        name: CNCF
-      - url: https://github.com/helm/helm/releases.atom
-        name: Helm
-      - url: https://github.com/argoproj/argo-cd/releases.atom
-        name: ArgoCD
-      - url: https://github.com/envoyproxy/envoy/releases.atom
-        name: Envoy
-      - url: https://github.com/istio/istio/releases.atom
-        name: Istio (GitHub)
-
-  observability:
-    webhook_env: DISCORD_WEBHOOK_URL_OBSERVABILITY
-    sources:
-      - url: https://github.com/open-telemetry/opentelemetry-go/releases.atom
-        name: OpenTelemetry
-      - url: https://github.com/prometheus/prometheus/releases.atom
-        name: Prometheus
-      - url: https://github.com/grafana/grafana/releases.atom
-        name: Grafana
-      - url: https://www.datadoghq.com/blog/rss.xml
-        name: Datadog Blog
-
-  security:
-    webhook_env: DISCORD_WEBHOOK_URL_SECURITY
-    sources:
-      - url: https://security.googleblog.com/feeds/posts/default
-        name: Google Security Blog
-      - url: https://aws.amazon.com/blogs/security/feed/
-        name: AWS Security Blog
-      - url: https://github.com/aquasecurity/trivy/releases.atom
-        name: Trivy (Container Security)
-      - url: https://github.com/falcosecurity/falco/releases.atom
-        name: Falco (Runtime Security)
-
-  engineering:
-    webhook_env: DISCORD_WEBHOOK_URL_ENGINEERING
-    sources:
-      - url: https://www.infoq.com/feed/
-        name: InfoQ
-      - url: https://hnrss.org/frontpage
-        name: Hacker News
-      - url: https://sreweekly.com/feed/
-        name: SRE Weekly
-      - url: https://news.ycombinator.com/rss
-        name: Y Combinator News
-
-  oss:
-    webhook_env: DISCORD_WEBHOOK_URL_OSS
-    sources:
-      - url: https://github.com/kubernetes/kubernetes/releases.atom
-        name: Kubernetes Releases
-      - url: https://github.com/docker/cli/releases.atom
-        name: Docker CLI
-      - url: https://github.com/containers/podman/releases.atom
-        name: Podman
-      - url: https://github.com/go-gitops/flux/releases.atom
-        name: Flux (GitOps)
+        name: CNCF / KubeCon
+      - url: https://cloud.google.com/blog/products/devops-sre/rss/
+        name: Google Cloud SRE
+      - url: https://newrelic.com/blog/feed
+        name: New Relic Blog
 
 keywords:
   priority:
@@ -108,11 +26,3 @@ keywords:
     - "CVE"
     - "Vulnerability"
     - "Critical"
-    - "v1.0.0"
-
-  include:
-    - "Kubernetes"
-    - "Cloud"
-    - "Release"
-    - "Update"
-    - "New"
