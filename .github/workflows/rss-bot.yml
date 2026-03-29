@@ -22,12 +22,6 @@ jobs:
 
       - name: Run RSS Bot
         env:
-          DISCORD_WEBHOOK_URL_AI: ${{ secrets.DISCORD_WEBHOOK_URL_AI }}
-          DISCORD_WEBHOOK_URL_CLOUD: ${{ secrets.DISCORD_WEBHOOK_URL_CLOUD }}
-          DISCORD_WEBHOOK_URL_KUBERNETES: ${{ secrets.DISCORD_WEBHOOK_URL_KUBERNETES }}
-          DISCORD_WEBHOOK_URL_CNCF: ${{ secrets.DISCORD_WEBHOOK_URL_CNCF }}
-          DISCORD_WEBHOOK_URL_OBSERVABILITY: ${{ secrets.DISCORD_WEBHOOK_URL_OBSERVABILITY }}
-          DISCORD_WEBHOOK_URL_SECURITY: ${{ secrets.DISCORD_WEBHOOK_URL_SECURITY }}
-          DISCORD_WEBHOOK_URL_ENGINEERING: ${{ secrets.DISCORD_WEBHOOK_URL_ENGINEERING }}
-          DISCORD_WEBHOOK_URL_OSS: ${{ secrets.DISCORD_WEBHOOK_URL_OSS }}
+          DISCORD_WEBHOOK_URL_TRENDS: ${{ secrets.DISCORD_WEBHOOK_URL_TRENDS }}
+          DISCORD_WEBHOOK_URL_SRE: ${{ secrets.DISCORD_WEBHOOK_URL_SRE }}
         run: deno run --allow-net --allow-env --allow-read --allow-write src/bot.ts

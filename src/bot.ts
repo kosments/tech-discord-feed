@@ -229,14 +229,8 @@ function formatDiscordMessage(item: RSSItem, sourceName: string, category: strin
   const description = item.description ? item.description.substring(0, 200) : "";
 
   const categoryEmoji = {
-    ai: "🤖",
-    cloud: "☁️",
-    kubernetes: "☸️",
-    cncf: "📦",
-    observability: "📊",
-    security: "🔒",
-    engineering: "⚙️",
-    oss: "🚀",
+    trends: "📈",
+    sre: "🔧",
   };
 
   const emoji = categoryEmoji[category as keyof typeof categoryEmoji] || "📰";
