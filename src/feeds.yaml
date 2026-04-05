@@ -11,6 +11,8 @@ feeds:
         name: Qiita Kubernetes
       - url: https://qiita.com/tags/gcp/feed
         name: Qiita GCP
+      - url: https://qiita.com/tags/newrelic/feed
+        name: Qiita NewRelic
 
   zenn:
     webhook_env: DISCORD_WEBHOOK_URL_ZENN
@@ -21,15 +23,33 @@ feeds:
         name: Zenn Kubernetes
       - url: https://zenn.dev/topics/googlecloud/feed
         name: Zenn GoogleCloud
+      - url: https://zenn.dev/topics/newrelic/feed
+        name: Zenn NewRelic
 
-  googlecloud:
-    webhook_env: DISCORD_WEBHOOK_URL_GOOGLECLOUD
+  # ── Google Cloud ─────────────────────────────────────────
+  googlecloud-en:
+    webhook_env: DISCORD_WEBHOOK_URL_GOOGLECLOUD_EN
     sources:
       - url: https://cloud.google.com/feeds/gcp-release-notes.xml
         name: GCP Release Notes
       - url: https://cloudblog.withgoogle.com/rss/
-        name: Google Cloud Blog
+        name: Google Cloud Blog (EN)
+      - url: https://cloudblog.withgoogle.com/products/ai-machine-learning/rss/
+        name: GCP AI/ML Blog (EN)
 
+  googlecloud-jp:
+    webhook_env: DISCORD_WEBHOOK_URL_GOOGLECLOUD_JP
+    sources:
+      - url: https://cloudblog.withgoogle.com/ja/rss/
+        name: Google Cloud Blog (JP)
+      - url: https://blog.g-gen.co.jp/feed
+        name: G-gen Blog
+      - url: https://zenn.dev/cloud_ace/feed
+        name: CloudACE Zenn
+      - url: https://cloudblog.withgoogle.com/ja/products/ai-machine-learning/rss/
+        name: GCP AI/ML Blog (JP)
+
+  # ── GKE / Kubernetes ─────────────────────────────────────
   gke:
     webhook_env: DISCORD_WEBHOOK_URL_GKE
     sources:
@@ -46,6 +66,7 @@ feeds:
       - url: https://github.com/kubernetes/enhancements/releases.atom
         name: Kubernetes Enhancements
 
+  # ── CNCF Ecosystem ───────────────────────────────────────
   cncf:
     webhook_env: DISCORD_WEBHOOK_URL_CNCF
     sources:
@@ -63,15 +84,70 @@ feeds:
         name: Prometheus
       - url: https://github.com/open-telemetry/opentelemetry-collector/releases.atom
         name: OpenTelemetry Collector
+      - url: https://opentelemetry.io/blog/index.xml
+        name: OpenTelemetry Blog
 
-  newrelic:
-    webhook_env: DISCORD_WEBHOOK_URL_NEWRELIC
+  # ── New Relic ─────────────────────────────────────────────
+  newrelic-en:
+    webhook_env: DISCORD_WEBHOOK_URL_NEWRELIC_EN
     sources:
       - url: https://newrelic.com/blog/rss.xml
-        name: New Relic Blog
+        name: New Relic Blog (EN)
       - url: https://github.com/newrelic/newrelic-cli/releases.atom
         name: New Relic CLI
 
+  newrelic-jp:
+    webhook_env: DISCORD_WEBHOOK_URL_NEWRELIC_JP
+    sources:
+      - url: https://newrelic.com/jp/blog/rss.xml
+        name: New Relic Blog (JP)
+      - url: https://blog.kinto-technologies.com/feed
+        name: KINTO Tech Blog
+
+  # ── CDN / Edge ────────────────────────────────────────────
+  fastly-en:
+    webhook_env: DISCORD_WEBHOOK_URL_FASTLY_EN
+    sources:
+      - url: https://www.fastly.com/blog/feed
+        name: Fastly Blog (EN)
+
+  fastly-jp:
+    webhook_env: DISCORD_WEBHOOK_URL_FASTLY_JP
+    sources:
+      - url: https://www.fastly.com/jp/blog/feed
+        name: Fastly Blog (JP)
+
+  akamai:
+    webhook_env: DISCORD_WEBHOOK_URL_AKAMAI
+    sources:
+      - url: https://www.akamai.com/blog/rss
+        name: Akamai Blog
+
+  cloudflare:
+    webhook_env: DISCORD_WEBHOOK_URL_CLOUDFLARE
+    sources:
+      - url: https://blog.cloudflare.com/rss/
+        name: Cloudflare Blog
+
+  # ── Load Balancing / Networking ───────────────────────────
+  glb:
+    webhook_env: DISCORD_WEBHOOK_URL_GLB
+    sources:
+      - url: https://cloud.google.com/feeds/cloud-load-balancing-release-notes.xml
+        name: Cloud Load Balancing
+      - url: https://cloud.google.com/feeds/cloud-armor-release-notes.xml
+        name: Cloud Armor
+      - url: https://cloud.google.com/feeds/cloud-cdn-release-notes.xml
+        name: Cloud CDN
+
+  # ── API Management ────────────────────────────────────────
+  apigeex:
+    webhook_env: DISCORD_WEBHOOK_URL_APIGEEX
+    sources:
+      - url: https://cloud.google.com/feeds/apigee-release-notes.xml
+        name: Apigee X Release Notes
+
+  # ── Engineering / Tech News ───────────────────────────────
   hackernews:
     webhook_env: DISCORD_WEBHOOK_URL_HACKERNEWS
     keywords:
@@ -107,40 +183,6 @@ feeds:
         name: Netflix TechBlog
       - url: https://engineering.linkedin.com/blog.rss.html
         name: LinkedIn Engineering
-
-  apigeex:
-    webhook_env: DISCORD_WEBHOOK_URL_APIGEEX
-    sources:
-      - url: https://cloud.google.com/feeds/apigee-release-notes.xml
-        name: Apigee X Release Notes
-
-  glb:
-    webhook_env: DISCORD_WEBHOOK_URL_GLB
-    sources:
-      - url: https://cloud.google.com/feeds/cloud-load-balancing-release-notes.xml
-        name: Cloud Load Balancing
-      - url: https://cloud.google.com/feeds/cloud-armor-release-notes.xml
-        name: Cloud Armor
-      - url: https://cloud.google.com/feeds/cloud-cdn-release-notes.xml
-        name: Cloud CDN
-
-  akamai:
-    webhook_env: DISCORD_WEBHOOK_URL_AKAMAI
-    sources:
-      - url: https://www.akamai.com/blog/rss
-        name: Akamai Blog
-
-  fastly:
-    webhook_env: DISCORD_WEBHOOK_URL_FASTLY
-    sources:
-      - url: https://www.fastly.com/blog/feed
-        name: Fastly Blog
-
-  cloudflare:
-    webhook_env: DISCORD_WEBHOOK_URL_CLOUDFLARE
-    sources:
-      - url: https://blog.cloudflare.com/rss/
-        name: Cloudflare Blog
 
 keywords:
   priority:
