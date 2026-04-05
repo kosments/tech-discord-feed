@@ -1,17 +1,23 @@
 import { parse } from "https://deno.land/std@0.208.0/yaml/mod.ts";
 
+interface CategoryKeywords {
+  priority?: string[];
+  include?: string[];
+}
+
 interface FeedConfig {
+  settings?: {
+    max_per_run?: number;
+  };
   feeds: Record<
     string,
     {
       webhook_env: string;
       sources: Array<{ url: string; name: string }>;
+      keywords?: CategoryKeywords;
     }
   >;
-  keywords?: {
-    priority?: string[];
-    include?: string[];
-  };
+  keywords?: CategoryKeywords;
 }
 
 interface RSSItem {
@@ -40,11 +46,11 @@ async function saveStateFile(state: Map<string, string>): Promise<void> {
 }
 
 function parseRSSDate(dateStr?: string): number {
-  if (!dateStr) return Date.now();
+  if (!dateStr) return 0;
   try {
     return new Date(dateStr).getTime();
   } catch {
-    return Date.now();
+    return 0;
   }
 }
 
@@ -52,29 +58,33 @@ function getItemId(item: RSSItem): string {
   return item.guid || item.link || item.title || "";
 }
 
-function shouldIncludeItem(item: RSSItem, keywords?: { priority?: string[]; include?: string[] }): boolean {
+function shouldIncludeItem(
+  item: RSSItem,
+  globalKeywords?: CategoryKeywords,
+  categoryKeywords?: CategoryKeywords,
+): boolean {
   if (!item.title) return false;
 
   const text = `${item.title} ${item.description || ""}`.toLowerCase();
 
-  // 優先度キーワードをチェック
-  if (keywords?.priority) {
-    for (const keyword of keywords.priority) {
-      if (text.includes(keyword.toLowerCase())) {
-        return true;
-      }
+  // グローバル優先度キーワード（どのチャネルも強制通過）
+  const priorityList = [
+    ...(globalKeywords?.priority || []),
+    ...(categoryKeywords?.priority || []),
+  ];
+  for (const keyword of priorityList) {
+    if (text.includes(keyword.toLowerCase())) {
+      return true;
     }
   }
 
-  // 除外キーワードをチェック
-  if (keywords?.include) {
-    for (const keyword of keywords.include) {
-      if (!text.includes(keyword.toLowerCase())) {
-        return false;
-      }
-    }
+  // チャネル固有のincludeキーワード（いずれかに一致すればOK）
+  const includeList = categoryKeywords?.include || [];
+  if (includeList.length > 0) {
+    return includeList.some((kw) => text.includes(kw.toLowerCase()));
   }
 
+  // includeキーワードなし = ソース自体で絞り込み済みなので通過
   return true;
 }
 
@@ -83,7 +93,6 @@ async function fetchRSSFeed(url: string): Promise<RSSItem[]> {
     const response = await fetch(url);
     const xml = await response.text();
 
-    // Simple XML parsing for RSS/Atom feeds
     const items: RSSItem[] = [];
 
     // RSS items
@@ -100,8 +109,8 @@ async function fetchRSSFeed(url: string): Promise<RSSItem[]> {
       const guidMatch = itemXml.match(/<guid[^>]*>([\s\S]*?)<\/guid>/);
 
       items.push({
-        title: titleMatch ? titleMatch[1].replace(/<[^>]*>/g, "") : undefined,
-        link: linkMatch ? linkMatch[1] : undefined,
+        title: titleMatch ? titleMatch[1].replace(/<[^>]*>/g, "").trim() : undefined,
+        link: linkMatch ? linkMatch[1].trim() : undefined,
         description: descMatch ? descMatch[1].replace(/<[^>]*>/g, "").substring(0, 200) : undefined,
         pubDate: pubDateMatch ? pubDateMatch[1] : undefined,
         guid: guidMatch ? guidMatch[1] : undefined,
@@ -117,16 +126,20 @@ async function fetchRSSFeed(url: string): Promise<RSSItem[]> {
       const linkMatch = entryXml.match(/<link[^>]*href="([^"]*)"[^>]*>/);
       const summaryMatch = entryXml.match(/<summary[^>]*>([\s\S]*?)<\/summary>/);
       const publishedMatch = entryXml.match(/<published[^>]*>([\s\S]*?)<\/published>/);
+      const updatedMatch = entryXml.match(/<updated[^>]*>([\s\S]*?)<\/updated>/);
       const idMatch = entryXml.match(/<id[^>]*>([\s\S]*?)<\/id>/);
 
       items.push({
-        title: titleMatch ? titleMatch[1].replace(/<[^>]*>/g, "") : undefined,
+        title: titleMatch ? titleMatch[1].replace(/<[^>]*>/g, "").trim() : undefined,
         link: linkMatch ? linkMatch[1] : undefined,
         description: summaryMatch ? summaryMatch[1].replace(/<[^>]*>/g, "").substring(0, 200) : undefined,
-        pubDate: publishedMatch ? publishedMatch[1] : undefined,
+        pubDate: publishedMatch ? publishedMatch[1] : updatedMatch ? updatedMatch[1] : undefined,
         guid: idMatch ? idMatch[1] : undefined,
       });
     }
+
+    // 新しい順にソート
+    items.sort((a, b) => parseRSSDate(b.pubDate) - parseRSSDate(a.pubDate));
 
     return items;
   } catch (error) {
@@ -157,14 +170,12 @@ async function sendDiscordMessage(webhookUrl: string, message: string): Promise<
 }
 
 async function main() {
-  // Load configuration
   const configYaml = await Deno.readTextFile("src/feeds.yaml");
   const config = parse(configYaml) as FeedConfig;
 
-  // Load state
+  const maxPerRun = config.settings?.max_per_run ?? 2;
   const state = await getStateFile();
 
-  // Process each category
   for (const [category, categoryConfig] of Object.entries(config.feeds)) {
     const webhookUrl = Deno.env.get(categoryConfig.webhook_env);
     if (!webhookUrl) {
@@ -174,38 +185,50 @@ async function main() {
 
     console.log(`Processing ${category}...`);
 
+    let sentCount = 0;
+
+    // 全ソースのアイテムを収集して日付順にまとめてから送信する
+    const allItems: Array<{ item: RSSItem; sourceName: string }> = [];
+
     for (const source of categoryConfig.sources) {
       const items = await fetchRSSFeed(source.url);
-
       for (const item of items) {
-        const itemId = getItemId(item);
-        if (!itemId) continue;
-
-        const stateKey = `${category}:${itemId}`;
-        if (state.has(stateKey)) {
-          continue; // Already processed
-        }
-
-        // Filter items by keywords
-        if (!shouldIncludeItem(item, config.keywords)) {
-          continue;
-        }
-
-        // Send to Discord
-        const message = formatDiscordMessage(item, source.name, category);
-        await sendDiscordMessage(webhookUrl, message);
-        console.log(`Sent: ${item.title}`);
-
-        // Mark as processed
-        state.set(stateKey, new Date().toISOString());
-
-        // Rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        allItems.push({ item, sourceName: source.name });
       }
     }
+
+    // 全体を新しい順にソート
+    allItems.sort((a, b) => parseRSSDate(b.item.pubDate) - parseRSSDate(a.item.pubDate));
+
+    for (const { item, sourceName } of allItems) {
+      if (sentCount >= maxPerRun) break;
+
+      const itemId = getItemId(item);
+      if (!itemId) continue;
+
+      const stateKey = `${category}:${itemId}`;
+      if (state.has(stateKey)) continue;
+
+      if (!shouldIncludeItem(item, config.keywords, categoryConfig.keywords)) {
+        // 未読としてマーク（再度フィルタされないよう）
+        state.set(stateKey, new Date().toISOString());
+        continue;
+      }
+
+      const message = formatDiscordMessage(item, sourceName, category);
+      await sendDiscordMessage(webhookUrl, message);
+      console.log(`Sent [${category}]: ${item.title}`);
+
+      state.set(stateKey, new Date().toISOString());
+      sentCount++;
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    console.log(`  → ${sentCount} item(s) sent for ${category}`);
   }
 
-  // Clean up old state entries (older than 7 days)
+  // 7日より古いステートを削除
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   for (const [key, value] of state.entries()) {
     try {
@@ -213,12 +236,10 @@ async function main() {
         state.delete(key);
       }
     } catch {
-      // Invalid date format, delete it
       state.delete(key);
     }
   }
 
-  // Save state
   await saveStateFile(state);
   console.log("Done!");
 }
@@ -228,18 +249,25 @@ function formatDiscordMessage(item: RSSItem, sourceName: string, category: strin
   const link = item.link || "";
   const description = item.description ? item.description.substring(0, 200) : "";
 
-  const categoryEmoji = {
-    ai: "🤖",
-    cloud: "☁️",
-    kubernetes: "☸️",
+  const categoryEmoji: Record<string, string> = {
+    qiita: "🟩",
+    zenn: "📘",
+    googlecloud: "☁️",
+    gke: "⚙️",
+    k8s: "☸️",
     cncf: "📦",
-    observability: "📊",
-    security: "🔒",
-    engineering: "⚙️",
-    oss: "🚀",
+    newrelic: "📊",
+    hackernews: "🔥",
+    bytebytego: "🏗️",
+    medium: "📝",
+    apigeex: "🔌",
+    glb: "🌐",
+    akamai: "🛡️",
+    fastly: "⚡",
+    cloudflare: "🟠",
   };
 
-  const emoji = categoryEmoji[category as keyof typeof categoryEmoji] || "📰";
+  const emoji = categoryEmoji[category] ?? "📰";
 
   let message = `${emoji} **[${sourceName}]** ${title}`;
   if (link) {

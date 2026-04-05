@@ -11,14 +11,21 @@
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
 const CHANNELS_CONFIG = [
-  { name: "ai-dev", description: "AI Tools & Updates" },
-  { name: "cloud-release", description: "Cloud (GCP, AWS) Releases" },
-  { name: "kubernetes", description: "Kubernetes News & Releases" },
-  { name: "cncf-ecosystem", description: "CNCF Ecosystem" },
-  { name: "observability", description: "Observability Tools & Updates" },
-  { name: "security", description: "Security Advisories" },
-  { name: "engineering-news", description: "Engineering News & Trends" },
-  { name: "trending-oss", description: "Trending Open Source" },
+  { name: "qiita",       description: "Qiita - SRE / Kubernetes / GCP 記事" },
+  { name: "zenn",        description: "Zenn - SRE / Kubernetes / GoogleCloud 記事" },
+  { name: "googlecloud", description: "Google Cloud Release Notes & Blog" },
+  { name: "gke",         description: "Google Kubernetes Engine Release Notes" },
+  { name: "k8s",         description: "Kubernetes Releases, Blog & Enhancements" },
+  { name: "cncf",        description: "CNCF / Helm / ArgoCD / Istio / Envoy / Prometheus" },
+  { name: "newrelic",    description: "New Relic Blog & Releases" },
+  { name: "hackernews",  description: "Hacker News (SRE / Infra filter)" },
+  { name: "bytebytego",  description: "ByteByteGo - System Design" },
+  { name: "medium",      description: "Medium Engineering Blogs" },
+  { name: "apigeex",     description: "Apigee X Release Notes" },
+  { name: "glb",         description: "Cloud Load Balancing / Armor / CDN" },
+  { name: "akamai",      description: "Akamai Blog" },
+  { name: "fastly",      description: "Fastly Blog" },
+  { name: "cloudflare",  description: "Cloudflare Blog" },
 ];
 
 interface Channel {
@@ -113,20 +120,6 @@ function getWebhookUrl(webhook: Webhook): string {
   return `https://discord.com/api/webhooks/${webhook.id}/${webhook.token}`;
 }
 
-function getCategoryName(channelName: string): string {
-  const mapping: Record<string, string> = {
-    "ai-dev": "ai",
-    "cloud-release": "cloud",
-    "kubernetes": "kubernetes",
-    "cncf-ecosystem": "cncf",
-    "observability": "observability",
-    "security": "security",
-    "engineering-news": "engineering",
-    "trending-oss": "oss",
-  };
-  return mapping[channelName] || channelName;
-}
-
 async function main() {
   const guildId = Deno.env.get("DISCORD_GUILD_ID");
   if (!guildId) {
@@ -141,26 +134,22 @@ async function main() {
 
   for (const channelConfig of CHANNELS_CONFIG) {
     try {
-      // チャンネル作成
       const channel = await createChannel(
         guildId,
         channelConfig.name,
         channelConfig.description,
       );
 
-      // Webhook作成
       const webhook = await createWebhook(
         channel.id,
         `tech-feed-${channelConfig.name}`,
       );
 
-      const categoryName = getCategoryName(channelConfig.name);
-      const envVarName = `DISCORD_WEBHOOK_URL_${categoryName.toUpperCase()}`;
+      const envVarName = `DISCORD_WEBHOOK_URL_${channelConfig.name.toUpperCase()}`;
       webhooks[envVarName] = getWebhookUrl(webhook);
 
-      console.log(`  Webhook URL: ${envVarName}\n`);
+      console.log(`  Env: ${envVarName}\n`);
 
-      // Rate limiting
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       errors.push(
@@ -169,7 +158,6 @@ async function main() {
     }
   }
 
-  // 結果表示
   console.log("\n" + "=".repeat(60));
   console.log("📋 GitHub Secrets に登録する内容:\n");
 
@@ -190,12 +178,8 @@ async function main() {
     "手順: Settings → Secrets and variables → Actions → New repository secret",
   );
 
-  // JSON形式で出力（自動処理用）
   const secretsFile = "discord-secrets.json";
-  await Deno.writeTextFile(
-    secretsFile,
-    JSON.stringify(webhooks, null, 2),
-  );
+  await Deno.writeTextFile(secretsFile, JSON.stringify(webhooks, null, 2));
   console.log(`\nJSON形式で ${secretsFile} に保存されました。`);
 }
 

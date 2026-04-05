@@ -2,8 +2,8 @@ name: Tech RSS Bot
 
 on:
   schedule:
-    # Every 15 minutes
-    - cron: "*/15 * * * *"
+    # 3 times/day: 00:00, 08:00, 16:00 UTC (= 09:00, 17:00, 01:00 JST)
+    - cron: "0 0,8,16 * * *"
   workflow_dispatch:
 
 permissions:
@@ -22,12 +22,19 @@ jobs:
 
       - name: Run RSS Bot
         env:
-          DISCORD_WEBHOOK_URL_AI: ${{ secrets.DISCORD_WEBHOOK_URL_AI }}
-          DISCORD_WEBHOOK_URL_CLOUD: ${{ secrets.DISCORD_WEBHOOK_URL_CLOUD }}
-          DISCORD_WEBHOOK_URL_KUBERNETES: ${{ secrets.DISCORD_WEBHOOK_URL_KUBERNETES }}
+          DISCORD_WEBHOOK_URL_QIITA: ${{ secrets.DISCORD_WEBHOOK_URL_QIITA }}
+          DISCORD_WEBHOOK_URL_ZENN: ${{ secrets.DISCORD_WEBHOOK_URL_ZENN }}
+          DISCORD_WEBHOOK_URL_GOOGLECLOUD: ${{ secrets.DISCORD_WEBHOOK_URL_GOOGLECLOUD }}
+          DISCORD_WEBHOOK_URL_GKE: ${{ secrets.DISCORD_WEBHOOK_URL_GKE }}
+          DISCORD_WEBHOOK_URL_K8S: ${{ secrets.DISCORD_WEBHOOK_URL_K8S }}
           DISCORD_WEBHOOK_URL_CNCF: ${{ secrets.DISCORD_WEBHOOK_URL_CNCF }}
-          DISCORD_WEBHOOK_URL_OBSERVABILITY: ${{ secrets.DISCORD_WEBHOOK_URL_OBSERVABILITY }}
-          DISCORD_WEBHOOK_URL_SECURITY: ${{ secrets.DISCORD_WEBHOOK_URL_SECURITY }}
-          DISCORD_WEBHOOK_URL_ENGINEERING: ${{ secrets.DISCORD_WEBHOOK_URL_ENGINEERING }}
-          DISCORD_WEBHOOK_URL_OSS: ${{ secrets.DISCORD_WEBHOOK_URL_OSS }}
+          DISCORD_WEBHOOK_URL_NEWRELIC: ${{ secrets.DISCORD_WEBHOOK_URL_NEWRELIC }}
+          DISCORD_WEBHOOK_URL_HACKERNEWS: ${{ secrets.DISCORD_WEBHOOK_URL_HACKERNEWS }}
+          DISCORD_WEBHOOK_URL_BYTEBYTEGO: ${{ secrets.DISCORD_WEBHOOK_URL_BYTEBYTEGO }}
+          DISCORD_WEBHOOK_URL_MEDIUM: ${{ secrets.DISCORD_WEBHOOK_URL_MEDIUM }}
+          DISCORD_WEBHOOK_URL_APIGEEX: ${{ secrets.DISCORD_WEBHOOK_URL_APIGEEX }}
+          DISCORD_WEBHOOK_URL_GLB: ${{ secrets.DISCORD_WEBHOOK_URL_GLB }}
+          DISCORD_WEBHOOK_URL_AKAMAI: ${{ secrets.DISCORD_WEBHOOK_URL_AKAMAI }}
+          DISCORD_WEBHOOK_URL_FASTLY: ${{ secrets.DISCORD_WEBHOOK_URL_FASTLY }}
+          DISCORD_WEBHOOK_URL_CLOUDFLARE: ${{ secrets.DISCORD_WEBHOOK_URL_CLOUDFLARE }}
         run: deno run --allow-net --allow-env --allow-read --allow-write src/bot.ts
